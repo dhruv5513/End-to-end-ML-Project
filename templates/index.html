@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wine Quality Predictor | Premium AI Analysis</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* ===== CSS VARIABLES ===== */
+        :root {
+            --primary: #722F37;
+            --primary-dark: #4A1F24;
+            --primary-light: #9E4A54;
+            --accent: #D4AF37;
+            --accent-light: #E8C547;
+            --dark: #1C1C1C;
+            --dark-secondary: #2D2D2D;
+            --light: #FAFAFA;
+            --light-secondary: #F5F5F5;
+            --gray: #777777;
+            --white: #FFFFFF;
+            --shadow: 0 20px 60px rgba(0,0,0,0.3);
+            --shadow-light: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background: var(--dark);
+            color: var(--light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+        }
+
+        /* ===== BACKGROUND EFFECT ===== */
+        .bg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=1920&q=80') center/cover no-repeat;
+            filter: brightness(0.3) saturate(0.8);
+            transform: scale(1.1);
+            animation: slowZoom 30s ease-in-out infinite alternate;
+        }
+
+        @keyframes slowZoom {
+            0% { transform: scale(1.1); }
+            100% { transform: scale(1.2); }
+        }
+
+        .bg-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                135deg,
+                rgba(28, 28, 28, 0.95) 0%,
+                rgba(28, 28, 28, 0.7) 50%,
+                rgba(28, 28, 28, 0.9) 100%
+            );
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.5rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+            transition: all 0.4s ease;
+        }
+
+        header.scrolled {
+            background: rgba(28, 28, 28, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 5%;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--white);
+            box-shadow: 0 5px 20px rgba(114, 47, 55, 0.4);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .logo-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .logo-text span {
+            color: var(--accent);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2.5rem;
+        }
+
+        nav a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            font-weight: 400;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        nav a:hover {
+            color: var(--white);
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 120px 5% 80px;
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: 900px;
+            text-align: center;
+            animation: fadeInUp 1s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(114, 47, 55, 0.3);
+            border: 1px solid var(--primary);
+            padding: 0.6rem 1.5rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 {
+            font-size: 4.5rem;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--white) 0%, var(--accent-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: rgba(255,255,255,0.7);
+            max-width: 600px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.8;
+        }
+
+        /* ===== FORM CARD ===== */
+        .form-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 5% 100px;
+        }
+
+        .form-card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 30px;
+            padding: 3.5rem;
+            box-shadow: var(--shadow);
+            animation: fadeInUp 1s ease 0.2s forwards;
+            opacity: 0;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .form-header h2 {
+            font-size: 2.5rem;
+            color: var(--white);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header p {
+            color: rgba(255,255,255,0.6);
+            font-size: 1.1rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-group label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group label i {
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1.2rem 1.5rem;
+            background: rgba(255,255,255,0.08);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            color: var(--white);
+            font-size: 1rem;
+            font-family: 'Lato', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: rgba(255,255,255,0.12);
+            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255,255,255,0.3);
+        }
+
+        .form-group input:focus::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+
+        .submit-btn {
+            grid-column: 1 / -1;
+            padding: 1.5rem 3rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            border: none;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(114, 47, 55, 0.4);
+        }
+
+        .submit-btn i {
+            font-size: 1.3rem;
+        }
+
+        /* ===== FEATURES SECTION ===== */
+        .features {
+            padding: 100px 5%;
+            background: rgba(0,0,0,0.3);
+        }
+
+        .features-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2.5rem;
+        }
+
+        .feature-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 25px;
+            padding: 3rem 2rem;
+            text-align: center;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-card:hover {
+            background: rgba(255,255,255,0.06);
+            transform: translateY(-10px);
+            border-color: rgba(255,255,255,0.15);
+        }
+
+        .feature-icon {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2.2rem;
+            color: var(--white);
+            box-shadow: 0 10px 30px rgba(114, 47, 55, 0.3);
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            color: var(--white);
+            margin-bottom: 1rem;
+        }
+
+        .feature-card p {
+            color: rgba(255,255,255,0.6);
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        /* ===== WINE INFO SECTION ===== */
+        .wine-info {
+            padding: 100px 5%;
+        }
+
+        .info-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .info-image {
+            position: relative;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .info-image img {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+        }
+
+        .info-image::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
+        }
+
+        .info-content h2 {
+            font-size: 3rem;
+            color: var(--white);
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .info-content h2 span {
+            color: var(--accent);
+        }
+
+        .info-content p {
+            color: rgba(255,255,255,0.7);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+
+        .info-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .stat-box {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            display: block;
+        }
+
+        .stat-label {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: rgba(0,0,0,0.5);
+            padding: 3rem 5%;
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        footer p {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.95rem;
+        }
+
+        footer span {
+            color: var(--accent);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .info-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 3rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-card {
+                padding: 2rem 1.5rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            nav ul {
+                display: none;
+            }
+            
+            .info-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background -->
+    <div class="bg-container">
+        <div class="bg-image"></div>
+        <div class="bg-overlay"></div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <a href="/" class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-wine-glass-alt"></i>
+            </div>
+            <div class="logo-text">Vino<span>Grade</span></div>
+        </a>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="#predict">Predict</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#about">About</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <span class="hero-badge">
+                <i class="fas fa-star"></i> AI-Powered Analysis
+            </span>
+            <h1>Discover the True Character of Your Wine</h1>
+            <p>Our advanced machine learning algorithm analyzes multiple chemical parameters to predict wine quality with exceptional accuracy. Experience the future of wine evaluation.</p>
+        </div>
+    </section>
+
+    <!-- Prediction Form -->
+    <section class="form-container" id="predict">
+        <div class="form-card">
+            <div class="form-header">
+                <h2>Analyze Your Wine</h2>
+                <p>Enter the wine parameters below for instant quality prediction</p>
+            </div>
+            <form action="/predict" method="POST">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="fixed_acidity"><i class="fas fa-flask"></i> Fixed Acidity</label>
+                        <input type="number" step="0.01" id="fixed_acidity" name="fixed_acidity" placeholder="e.g., 7.4" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="volatile_acidity"><i class="fas fa-vial"></i> Volatile Acidity</label>
+                        <input type="number" step="0.01" id="volatile_acidity" name="volatile_acidity" placeholder="e.g., 0.7" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="citric_acid"><i class="fas fa-lemon"></i> Citric Acid</label>
+                        <input type="number" step="0.01" id="citric_acid" name="citric_acid" placeholder="e.g., 0.0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="residual_sugar"><i class="fas fa-cubes"></i> Residual Sugar</label>
+                        <input type="number" step="0.01" id="residual_sugar" name="residual_sugar" placeholder="e.g., 1.9" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="chlorides"><i class="fas fa-prescription-bottle"></i> Chlorides</label>
+                        <input type="number" step="0.001" id="chlorides" name="chlorides" placeholder="e.g., 0.076" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="free_sulfur_dioxide"><i class="fas fa-cloud"></i> Free SO₂</label>
+                        <input type="number" step="1" id="free_sulfur_dioxide" name="free_sulfur_dioxide" placeholder="e.g., 11" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="total_sulfur_dioxide"><i class="fas fa-clouds"></i> Total SO₂</label>
+                        <input type="number" step="1" id="total_sulfur_dioxide" name="total_sulfur_dioxide" placeholder="e.g., 34" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="density"><i class="fas fa-weight-hanging"></i> Density</label>
+                        <input type="number" step="0.001" id="density" name="density" placeholder="e.g., 0.998" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="pH"><i class="fas fa-balance-scale"></i> pH Level</label>
+                        <input type="number" step="0.01" id="pH" name="pH" placeholder="e.g., 3.51" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="sulphates"><i class="fas fa-atom"></i> Sulphates</label>
+                        <input type="number" step="0.01" id="sulphates" name="sulphates" placeholder="e.g., 0.56" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="alcohol"><i class="fas fa-wine-glass"></i> Alcohol %</label>
+                        <input type="number" step="0.1" id="alcohol" name="alcohol" placeholder="e.g., 9.4" required>
+                    </div>
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-magic"></i> Predict Quality
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features" id="features">
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3>Smart AI Analysis</h3>
+                <p>Powered by advanced machine learning models trained on thousands of wine samples for precise predictions.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h3>Instant Results</h3>
+                <p>Get your wine quality analysis in milliseconds. Fast, efficient, and available 24/7.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Proven Accuracy</h3>
+                <p>Our model delivers highly accurate predictions with a proven track record of reliability.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Wine Info -->
+    <section class="wine-info" id="about">
+        <div class="info-container">
+            <div class="info-image">
+                <img src="https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=800&q=80" alt="Wine Tasting">
+            </div>
+            <div class="info-content">
+                <h2>Understanding <span>Wine Quality</span></h2>
+                <p>Wine quality is determined by a complex interplay of chemical components. Our AI analyzes 11 key parameters including acidity levels, sugar content, sulfur dioxide, and alcohol percentage to deliver a comprehensive quality assessment.</p>
+                <div class="info-stats">
+                    <div class="stat-box">
+                        <span class="stat-number">9</span>
+                        <span class="stat-label">Max Score</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-number">11</span>
+                        <span class="stat-label">Parameters</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-number">95%</span>
+                        <span class="stat-label">Accuracy</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2024 <span>VinoGrade</span> | Premium Wine Quality Prediction</p>
+    </footer>
+
+    <script>
+        // Header scroll effect
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+    </script>
+</body>
+</html>
+
