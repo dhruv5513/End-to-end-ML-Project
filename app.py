@@ -45,14 +45,8 @@ def index():
             
             obj = PredictionPipeline()
             predict = obj.predict(data)
-            
-            # Extract the prediction value (handle array output)
-            if hasattr(predict, '__len__'):
-                prediction_value = round(float(predict[0]), 2)
-            else:
-                prediction_value = round(float(predict), 2)
 
-            return render_template('results.html', prediction=prediction_value)
+            return render_template('results.html', prediction = str(predict))
 
         except Exception as e:
             print('The Exception message is: ',e)
